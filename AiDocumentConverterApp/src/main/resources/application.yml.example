@@ -1,0 +1,38 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ai-document-converter-app
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aidocconverter
+    username: your_db_username
+    password: your_db_password
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: always
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+openai:
+  api-key: your_groq_or_openai_api_key_here
+  model: your_model_name_here
+  base-url: https://api.groq.com/openai/v1/chat/completions
+
+app:
+  upload-dir: ./uploads
+  chunk-size: 1000
+  max-context-chunks: 8

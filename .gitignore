@@ -1,0 +1,10 @@
+@"
+AiDocumentConverterApp/target/
+AiDocumentConverterApp/src/main/resources/application.yml
+uploads/
+.idea/
+*.iml
+ai-document-converter-frontend/node_modules/
+ai-document-converter-frontend/dist/
+ai-document-converter-frontend/.env
+"@ | Out-File -FilePath .gitignore -Encoding utf8
