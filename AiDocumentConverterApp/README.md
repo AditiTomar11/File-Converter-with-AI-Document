@@ -32,15 +32,23 @@ Spring Boot backend for multi-format file conversion + AI-powered document Q&A.
 
 ## Running locally
 
-1. Create a Postgres database:
+`src/main/resources/application.yml` is committed with working defaults
+(Postgres on `localhost:5432/aidocconverter`, user/password `postgres`), so
+you only need a database and — for Q&A — an API key.
+
+1. Start Postgres:
+   ```
+   docker compose up -d      # from the repo root
+   ```
+   or create it manually:
    ```sql
    CREATE DATABASE aidocconverter;
    ```
-2. Set environment variables (or edit `application.yml` directly):
+2. Optionally export overrides:
    ```
    DB_USERNAME=postgres
    DB_PASSWORD=yourpassword
-   OPENAI_API_KEY=sk-...
+   OPENAI_API_KEY=sk-...     # or a Groq key (gsk_...)
    UPLOAD_DIR=./uploads
    ```
 3. Build and run:

@@ -53,6 +53,7 @@ public class BatchConfig {
                 .<String, String>chunk(20, transactionManager)
                 .reader(chunkItemReader(conversionJobRepository, null))
                 .writer(chunkItemWriter(documentChunkRepository, null))
+                .listener(new StepStatusListener(conversionJobRepository, JobStatus.CHUNKING))
                 .build();
     }
 
@@ -86,7 +87,9 @@ public class BatchConfig {
 
     /**
      * Flips the ConversionJob's status to COMPLETED/FAILED once the whole
-     * Batch job finishes, and records the CHUNKING transition beforehand.
+     * Batch job finishes. The intermediate CHUNKING transition is recorded by
+     * StepStatusListener on the chunking step, so the status only ever moves
+     * forward (PENDING -> EXTRACTING -> EXTRACTED -> CHUNKING -> COMPLETED).
      */
     static class JobCompletionListener implements org.springframework.batch.core.JobExecutionListener {
 
@@ -94,15 +97,6 @@ public class BatchConfig {
 
         JobCompletionListener(ConversionJobRepository conversionJobRepository) {
             this.conversionJobRepository = conversionJobRepository;
-        }
-
-        @Override
-        public void beforeJob(org.springframework.batch.core.JobExecution jobExecution) {
-            String jobId = jobExecution.getJobParameters().getString("jobId");
-            conversionJobRepository.findByJobId(jobId).ifPresent(job -> {
-                job.setStatus(JobStatus.CHUNKING);
-                conversionJobRepository.save(job);
-            });
         }
 
         @Override
@@ -115,6 +109,30 @@ public class BatchConfig {
                 } else {
                     job.setStatus(JobStatus.COMPLETED);
                 }
+                conversionJobRepository.save(job);
+            });
+        }
+    }
+
+    /**
+     * Marks the job with a given status right before a step runs. Used to
+     * record the CHUNKING transition at the start of chunkingStep.
+     */
+    static class StepStatusListener implements org.springframework.batch.core.StepExecutionListener {
+
+        private final ConversionJobRepository conversionJobRepository;
+        private final JobStatus status;
+
+        StepStatusListener(ConversionJobRepository conversionJobRepository, JobStatus status) {
+            this.conversionJobRepository = conversionJobRepository;
+            this.status = status;
+        }
+
+        @Override
+        public void beforeStep(org.springframework.batch.core.StepExecution stepExecution) {
+            String jobId = stepExecution.getJobParameters().getString("jobId");
+            conversionJobRepository.findByJobId(jobId).ifPresent(job -> {
+                job.setStatus(status);
                 conversionJobRepository.save(job);
             });
         }

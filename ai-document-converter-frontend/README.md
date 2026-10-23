@@ -20,11 +20,9 @@ Opens on http://localhost:5173. Make sure the Spring Boot backend is running
 on http://localhost:8080 (default assumed — override with a `.env` file:
 `VITE_API_BASE_URL=http://localhost:8080`).
 
-## IMPORTANT: backend CORS
+## CORS
 
-By default, Spring Boot blocks cross-origin requests, so the browser will
-reject calls from `localhost:5173` to `localhost:8080` unless you add a CORS
-config to the backend. See the `CorsConfig.java` snippet provided alongside
-this project — add it to
-`AiDocumentConverterApp/src/main/java/com/aiconverter/config/` and restart
-the backend before testing the frontend.
+The backend already ships `config/CorsConfig.java`, which allows
+`http://localhost:5173` and `http://127.0.0.1:5173`. If you serve the
+frontend from another origin, add it via the `CORS_ALLOWED_ORIGINS`
+environment variable on the backend (comma-separated).

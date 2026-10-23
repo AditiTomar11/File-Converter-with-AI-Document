@@ -1,10 +1,28 @@
-@"
+# Java / Maven
 AiDocumentConverterApp/target/
-AiDocumentConverterApp/src/main/resources/application.yml
+*.class
+
+# Runtime uploads
 uploads/
+
+# Local secrets override (application.yml itself is committed with safe defaults)
+AiDocumentConverterApp/src/main/resources/application-local.yml
+AiDocumentConverterApp/src/main/resources/application-local.properties
+
+# IDE
 .idea/
 *.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# Node / frontend
 ai-document-converter-frontend/node_modules/
 ai-document-converter-frontend/dist/
 ai-document-converter-frontend/.env
-"@ | Out-File -FilePath .gitignore -Encoding utf8
+ai-document-converter-frontend/.env.local
+ai-document-converter-frontend/tsconfig.tsbuildinfo
+
+# OS
+.DS_Store
